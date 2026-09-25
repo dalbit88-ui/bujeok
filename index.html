@@ -25,33 +25,79 @@
       margin-bottom: 10px;
     }
 
-    .intro {
+    p {
       font-size: 18px;
       margin-bottom: 30px;
     }
 
     .mandala {
-      width: 260px;
-      max-width: 80%;
-      border-radius: 12px;
+      width: 220px;
+      height: 220px;
+      object-fit: contain;
+      margin: 10px auto 30px;
+      display: block;
+    }
+
+    button {
+      background: #9a4b12;
+      color: white;
+      border: none;
+      border-radius: 30px;
+      padding: 16px 35px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #78390d;
+    }
+
+    #selection {
+      display: none;
+    }
+
+    .cards {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-top: 30px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 15px;
+      padding: 15px;
+      width: 170px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.15);
+    }
+
+    .card img {
+      width: 160px;
+      height: 160px;
+      object-fit: contain;
+    }
+
+    .card button {
+      margin-top: 10px;
+      padding: 10px 18px;
+      font-size: 15px;
+    }
+
+    #result {
+      display: none;
+    }
+
+    #result img {
+      width: 280px;
+      max-width: 90%;
       margin: 20px auto;
       display: block;
     }
 
-    .start-button {
-      display: inline-block;
-      padding: 15px 35px;
-      background: #8b4513;
-      color: white;
-      text-decoration: none;
-      border-radius: 30px;
-      font-size: 18px;
-      border: none;
-      cursor: pointer;
-    }
-
-    .start-button:hover {
-      opacity: 0.85;
+    .back {
+      background: #555;
+      margin-top: 10px;
     }
   </style>
 </head>
@@ -60,19 +106,91 @@
 
   <div class="container">
 
-    <h1>🔮 부적</h1>
+    <!-- 첫 화면 -->
+    <section id="home">
+      <h1>🔮 부적</h1>
 
-    <p class="intro">
-      나에게 필요한 부적을 선택해 보세요.
-    </p>
+      <p>나에게 필요한 부적을 선택해 보세요.</p>
 
-    <img src="mandala.png" alt="만다라" class="mandala">
+      <img src="mandala.png" alt="만다라" class="mandala">
 
-    <button class="start-button" onclick="alert('부적 선택을 시작합니다.')">
-      부적 선택하기
-    </button>
+      <button onclick="startSelection()">
+        부적 선택하기
+      </button>
+    </section>
+
+
+    <!-- 부적 선택 화면 -->
+    <section id="selection">
+
+      <h1>부적 선택</h1>
+
+      <p>원하는 부적을 선택해 보세요.</p>
+
+      <div class="cards">
+
+        <div class="card">
+          <img src="13 (1).jpg" alt="부적 1">
+          <br>
+          <button onclick="selectTalisman('13 (1).jpg')">
+            이 부적 선택
+          </button>
+        </div>
+
+        <div class="card">
+          <img src="20.jpg" alt="부적 2">
+          <br>
+          <button onclick="selectTalisman('20.jpg')">
+            이 부적 선택
+          </button>
+        </div>
+
+        <div class="card">
+          <img src="34.jpg" alt="부적 3">
+          <br>
+          <button onclick="selectTalisman('34.jpg')">
+            이 부적 선택
+          </button>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- 선택 결과 -->
+    <section id="result">
+
+      <h1>✨ 선택한 부적</h1>
+
+      <p>당신이 선택한 부적입니다.</p>
+
+      <img id="selectedImage" src="" alt="선택한 부적">
+
+      <button onclick="location.reload()" class="back">
+        처음으로
+      </button>
+
+    </section>
 
   </div>
+
+
+  <script>
+
+    function startSelection() {
+      document.getElementById("home").style.display = "none";
+      document.getElementById("selection").style.display = "block";
+    }
+
+    function selectTalisman(image) {
+      document.getElementById("selection").style.display = "none";
+      document.getElementById("result").style.display = "block";
+
+      document.getElementById("selectedImage").src = image;
+    }
+
+  </script>
 
 </body>
 </html>
