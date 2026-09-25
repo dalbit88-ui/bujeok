@@ -1,196 +1,555 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>부적</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bluesky 님의 부적 · 학당</title>
+<style>
+  /* ── 괴황지 위의 주사(朱砂) — 부적의 재료에서 가져온 팔레트 ── */
+  :root{
+    --paper:#f3e6c4;        /* 괴황지 */
+    --paper-deep:#e8d5a3;
+    --panel:#fbf4e2;
+    --ink:#221c17;          /* 먹 */
+    --ink-soft:#6a5d4d;
+    --line:#d9c58f;
+    --cinnabar:#b9321f;     /* 주사 */
+    --cinnabar-deep:#8f2415;
+    --seal-ink:#fff4e6;
+    --glow:rgba(185,50,31,.35);
+    --bubble:#221c17;
+    --bubble-ink:#f6ead0;
+    --shadow:0 1px 2px rgba(34,28,23,.08),0 10px 30px rgba(34,28,23,.10);
+  }
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+    --paper:#15120f;--paper-deep:#1d1813;--panel:#221c16;--ink:#f1e6cf;--ink-soft:#b3a48c;--line:#3a3025;
+    --cinnabar:#d4432c;--cinnabar-deep:#a8301c;--seal-ink:#fff4e6;--glow:rgba(212,67,44,.45);
+    --bubble:#f1e6cf;--bubble-ink:#1b1613;
+    --shadow:0 1px 2px rgba(0,0,0,.5),0 14px 36px rgba(0,0,0,.45);
+  }}
+  :root[data-theme="dark"]{
+    --paper:#15120f;--paper-deep:#1d1813;--panel:#221c16;--ink:#f1e6cf;--ink-soft:#b3a48c;--line:#3a3025;
+    --cinnabar:#d4432c;--cinnabar-deep:#a8301c;--seal-ink:#fff4e6;--glow:rgba(212,67,44,.45);
+    --bubble:#f1e6cf;--bubble-ink:#1b1613;
+    --shadow:0 1px 2px rgba(0,0,0,.5),0 14px 36px rgba(0,0,0,.45);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--paper);color:var(--ink);line-height:1.65;
+    font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Noto Sans KR","Malgun Gothic",sans-serif;
+    -webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(ellipse at 20% -10%,rgba(255,255,255,.35),transparent 55%),
+                     radial-gradient(ellipse at 100% 100%,rgba(185,50,31,.06),transparent 50%)}
+  .serif{font-family:"Apple Myungjo","AppleMyungjo","Nanum Myeongjo","NanumMyeongjo","Batang","BatangChe",Georgia,serif}
+  .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.92em;word-break:break-all}
+  .wrap{max-width:1120px;margin:0 auto;padding:clamp(22px,4vw,48px) clamp(16px,4vw,32px) 96px}
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f8f1df;
-      color: #3b2416;
-      text-align: center;
-    }
+  /* ── 머리 ── */
+  header{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;
+    padding-bottom:22px;margin-bottom:30px;border-bottom:2px solid var(--cinnabar)}
+  .eyebrow{font-size:12px;letter-spacing:.22em;color:var(--cinnabar);margin:0 0 8px;font-weight:600}
+  h1{margin:0 0 4px;font-size:clamp(26px,5vw,40px);font-weight:500;letter-spacing:-.01em;line-height:1.2}
+  h1 b{font-weight:700}
+  .sub{margin:0;color:var(--ink-soft);font-size:15px}
+  .help{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border:1.5px solid var(--cinnabar);
+    border-radius:999px;background:none;color:var(--cinnabar);font:600 13.5px/1 inherit;font-family:inherit;cursor:pointer}
+  .help:hover,.help:focus-visible{background:var(--cinnabar);color:var(--seal-ink);outline:none}
+  .help i{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:currentColor;
+    font-style:normal;font-weight:800;font-size:12px;color:var(--paper)}
+  .help:hover i{color:var(--cinnabar)}
 
-    .container {
-      max-width: 700px;
-      margin: 0 auto;
-      padding: 50px 20px;
-    }
+  /* ── 부적 카드 ── */
+  .grid{display:grid;gap:22px;grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--shadow);
+    display:flex;flex-direction:column;transition:transform .2s,box-shadow .2s}
+  .card:hover{transform:translateY(-2px)}
+  .frame{display:block;background:#0d0b09;position:relative;aspect-ratio:1}
+  .frame img{display:block;width:100%;height:100%;object-fit:contain}
+  .badge{position:absolute;top:12px;left:12px;padding:5px 10px;border-radius:6px;background:var(--cinnabar);color:var(--seal-ink);
+    font-size:12px;font-weight:700;letter-spacing:.08em}
+  .body{padding:18px 20px 20px;display:flex;flex-direction:column;gap:10px;flex:1}
+  .body h2{margin:0;font-size:19px;font-weight:600;line-height:1.3}
+  .effect{margin:0;color:var(--ink-soft);font-size:14px;flex:1}
+  .meta{display:flex;gap:14px;font-size:12.5px;color:var(--ink-soft)}
+  .meta b{color:var(--ink);font-weight:600}
+  .launch{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:14px;border:0;border-radius:10px;
+    background:var(--cinnabar);color:var(--seal-ink);font:700 15px/1 inherit;font-family:inherit;cursor:pointer;
+    transition:background .15s,transform .1s}
+  .launch:hover{background:var(--cinnabar-deep)}
+  .launch:active{transform:scale(.99)}
+  .launch:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+  .launch svg{width:18px;height:18px}
+  .more{display:flex;gap:8px;flex-wrap:wrap}
+  .lnk{font-size:12.5px;color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--line);padding-bottom:1px}
+  .lnk:hover{color:var(--cinnabar);border-color:var(--cinnabar)}
 
-    h1 {
-      font-size: 42px;
-      margin-bottom: 10px;
-    }
+  /* ── 바닥 ── */
+  footer{margin-top:56px;padding-top:22px;border-top:1px solid var(--line);color:var(--ink-soft);font-size:13.5px;
+    display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+  footer h3{margin:0 0 6px;font-size:13px;letter-spacing:.12em;color:var(--cinnabar);font-weight:700}
+  footer p{margin:0 0 6px}
 
-    p {
-      font-size: 18px;
-      margin-bottom: 30px;
-    }
+  /* ── 라디오닉스 장치 ── */
+  .rad{position:fixed;inset:0;background:var(--paper);z-index:50;overflow-y:auto;display:none}
+  .rad.open{display:block}
+  .rad-in{max-width:1180px;margin:0 auto;padding:22px clamp(14px,3vw,28px) 80px}
+  .rad-top{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:6px;flex-wrap:wrap}
+  .rad-top h2{margin:0;font-size:20px;font-weight:600}
+  .rad-top h2 small{display:block;font-size:12px;letter-spacing:.2em;color:var(--cinnabar);font-weight:700;margin-bottom:2px}
+  .rad-tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .seg{display:inline-flex;border:1.5px solid var(--line);border-radius:8px;overflow:hidden}
+  .seg-b{padding:9px 12px;border:0;background:none;color:var(--ink-soft);font:600 13px/1 inherit;font-family:inherit;cursor:pointer}
+  .seg-b+.seg-b{border-left:1.5px solid var(--line)}
+  .seg-b[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+  .seg-b:focus-visible{outline:3px solid var(--cinnabar);outline-offset:-3px}
+  .ghost{padding:9px 14px;border:1.5px solid var(--line);border-radius:8px;background:none;color:var(--ink);
+    font:600 13.5px/1 inherit;font-family:inherit;cursor:pointer}
+  .ghost:hover{border-color:var(--cinnabar);color:var(--cinnabar)}
+  .ghost:focus-visible{outline:3px solid var(--cinnabar);outline-offset:2px}
+  .rad-note{color:var(--ink-soft);font-size:13.5px;margin:0 0 22px}
+  .rad-note b{color:var(--ink)}
+  .stage{display:grid;grid-template-columns:1fr minmax(320px,1.1fr) 1fr;gap:22px;align-items:start}
+  @media (max-width:940px){.stage{grid-template-columns:1fr}.core{order:-1}}
+  .pane{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;position:relative}
+  .pane h3{margin:0 0 2px;font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
+  .pane h3 .step{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--cinnabar);
+    color:var(--seal-ink);font-size:12px;font-weight:800}
+  .pane .hint{margin:0 0 12px;color:var(--ink-soft);font-size:12.5px}
+  .drop{aspect-ratio:1;border:1.5px dashed var(--line);border-radius:10px;display:grid;place-items:center;cursor:pointer;
+    overflow:hidden;background:var(--paper);position:relative;transition:border-color .15s}
+  .drop:hover{border-color:var(--cinnabar)}
+  .drop img{width:100%;height:100%;object-fit:cover;display:block}
+  .drop .ph{color:var(--ink-soft);font-size:13px;text-align:center;padding:14px;line-height:1.5}
+  .drop .ph b{display:block;color:var(--cinnabar);font-size:26px;margin-bottom:4px;font-weight:300}
+  .drop .swap{position:absolute;right:8px;bottom:8px;padding:5px 9px;border-radius:6px;background:rgba(34,28,23,.75);
+    color:#fff;font-size:11.5px;display:none}
+  .drop img + .swap{display:block}
+  .pane textarea{width:100%;margin-top:12px;background:var(--paper);color:var(--ink);border:1.5px solid var(--line);
+    border-radius:9px;padding:11px 12px;font-family:inherit;font-size:14px;line-height:1.6;resize:vertical;min-height:110px}
+  .pane textarea:focus{outline:none;border-color:var(--cinnabar)}
+  .core{display:grid;place-items:center;gap:18px}
+  .orbit{position:relative;width:100%;max-width:400px;aspect-ratio:1}
+  .orbit .nft{position:absolute;inset:14%;border-radius:8px;overflow:hidden;box-shadow:var(--shadow);z-index:2;background:#0d0b09;
+    transition:box-shadow .4s}
+  .orbit .nft img{width:100%;height:100%;object-fit:contain;display:block}
+  .m{position:absolute;width:42%;opacity:.8;animation:move 0s infinite linear}
+  .m0{top:-4%;left:-4%}.m1{top:-4%;right:-4%}.m2{bottom:-4%;left:-4%}.m3{bottom:-4%;right:-4%}
+  @keyframes move{from{transform:rotate(0deg) translateX(1px) rotate(0deg)}to{transform:rotate(360deg) translateX(1px) rotate(-360deg)}}
+  /* 원본(nftinquiryview.php)과 동일: 대기 중에도 부적은 3초 주기로 천천히 진동, 작동 중엔 만다라·부적·목적사·대상 이미지가 모두 0.1초 진동 */
+  /* 원본(nftinquiryview.php)과 동일한 동작:
+     작동 중 부적은 3초 주기로 목적사 ↔ 대상 위를 크게 왕복(타원 궤도)하고,
+     만다라·부적·목적사·대상 이미지는 0.1초 진동. --rx/--ry 는 JS가 화면 크기에 맞춰 넣는다 */
+  .orbit .nft{--rx:0px;--ry:0px}
+  .running .m{animation:move .1s infinite linear}
+  .running .orbit .nft{animation:sweep 3s infinite linear;z-index:60;box-shadow:0 0 0 2px var(--cinnabar),0 0 60px var(--glow)}
+  .running .orbit .nft img,.running .drop img{animation:move .1s infinite linear}
+  @keyframes sweep{
+    0%{transform:translate(var(--rx),0)}
+    12.5%{transform:translate(calc(var(--rx)*.707),calc(var(--ry)*.707))}
+    25%{transform:translate(0,var(--ry))}
+    37.5%{transform:translate(calc(var(--rx)*-.707),calc(var(--ry)*.707))}
+    50%{transform:translate(calc(var(--rx)*-1),0)}
+    62.5%{transform:translate(calc(var(--rx)*-.707),calc(var(--ry)*-.707))}
+    75%{transform:translate(0,calc(var(--ry)*-1))}
+    87.5%{transform:translate(calc(var(--rx)*.707),calc(var(--ry)*-.707))}
+    100%{transform:translate(var(--rx),0)}
+  }
+  @media (prefers-reduced-motion:reduce){.running .m,.running .orbit .nft img,.running .drop img{animation-duration:1.2s}.running .orbit .nft{animation-duration:9s}}
 
-    .mandala {
-      width: 220px;
-      height: 220px;
-      object-fit: contain;
-      margin: 10px auto 30px;
-      display: block;
-    }
+  /* 주사 도장 — Activate. 이 페이지에서 가장 눈에 띄어야 하는 단 하나 */
+  .seal{width:124px;height:124px;border:0;border-radius:14px;background:var(--cinnabar);color:var(--seal-ink);cursor:pointer;
+    font-family:inherit;display:grid;place-items:center;gap:2px;position:relative;box-shadow:0 6px 0 var(--cinnabar-deep);
+    transition:transform .08s,box-shadow .08s}
+  .seal::before{content:"";position:absolute;inset:6px;border:1.5px solid rgba(255,244,230,.55);border-radius:9px;pointer-events:none}
+  .seal:active{transform:translateY(4px);box-shadow:0 2px 0 var(--cinnabar-deep)}
+  .seal:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+  .seal .k{font-size:15px;font-weight:800;letter-spacing:.06em}
+  .seal .e{font-size:11px;letter-spacing:.14em;opacity:.85}
+  .seal.on{background:var(--ink);box-shadow:0 6px 0 #000,0 0 40px var(--glow)}
+  .seal.on::before{border-color:rgba(255,244,230,.35)}
+  .acts{display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap}
+  .save{padding:12px 20px;border:1.5px solid var(--ink);border-radius:9px;background:none;color:var(--ink);
+    font:700 14px/1 inherit;font-family:inherit;cursor:pointer}
+  .save:hover{background:var(--ink);color:var(--paper)}
+  .save:focus-visible{outline:3px solid var(--cinnabar);outline-offset:2px}
+  .status{color:var(--ink-soft);font-size:13px;text-align:center;margin:0;min-height:1.4em}
+  .status.ok{color:var(--cinnabar);font-weight:600}
 
-    button {
-      background: #9a4b12;
-      color: white;
-      border: none;
-      border-radius: 30px;
-      padding: 16px 35px;
-      font-size: 18px;
-      cursor: pointer;
-    }
+  /* ── 말풍선 가이드 ── */
+  .tour-dim{position:fixed;inset:0;z-index:90;display:none}
+  .tour-dim.on{display:block}
+  .tour-hole{position:absolute;border-radius:12px;box-shadow:0 0 0 9999px rgba(20,16,12,.55);transition:all .25s ease;
+    pointer-events:none}
+  .bubble{position:fixed;z-index:95;max-width:min(320px,calc(100vw - 32px));background:var(--bubble);color:var(--bubble-ink);
+    padding:14px 16px 12px;border-radius:14px;box-shadow:0 14px 40px rgba(0,0,0,.35);font-size:14px;line-height:1.55;display:none}
+  .bubble.on{display:block;animation:pop .22s ease}
+  @keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .bubble::after{content:"";position:absolute;width:14px;height:14px;background:var(--bubble);transform:rotate(45deg)}
+  .bubble[data-side="top"]::after{bottom:-7px;left:var(--ax,28px)}
+  .bubble[data-side="bottom"]::after{top:-7px;left:var(--ax,28px)}
+  .bubble[data-side="left"]::after{right:-7px;top:var(--ay,22px)}
+  .bubble[data-side="right"]::after{left:-7px;top:var(--ay,22px)}
+  .bubble .t{font-weight:700;margin:0 0 4px;font-size:14.5px}
+  .bubble .t small{font-weight:600;opacity:.6;margin-left:6px;font-size:12px}
+  .bubble p{margin:0 0 10px}
+  .bubble .row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .bubble button{font-family:inherit;font-size:13px;cursor:pointer;border-radius:7px;padding:7px 12px;border:0;font-weight:700}
+  .bubble .next{background:var(--cinnabar);color:var(--seal-ink)}
+  .bubble .skip{background:none;color:var(--bubble-ink);opacity:.65;padding-left:0}
+  .bubble .skip:hover{opacity:1}
 
-    button:hover {
-      background: #78390d;
-    }
-
-    #selection {
-      display: none;
-    }
-
-    .cards {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      flex-wrap: wrap;
-      margin-top: 30px;
-    }
-
-    .card {
-      background: white;
-      border-radius: 15px;
-      padding: 15px;
-      width: 170px;
-      box-shadow: 0 3px 12px rgba(0,0,0,0.15);
-    }
-
-    .card img {
-      width: 160px;
-      height: 160px;
-      object-fit: contain;
-    }
-
-    .card button {
-      margin-top: 10px;
-      padding: 10px 18px;
-      font-size: 15px;
-    }
-
-    #result {
-      display: none;
-    }
-
-    #result img {
-      width: 280px;
-      max-width: 90%;
-      margin: 20px auto;
-      display: block;
-    }
-
-    .back {
-      background: #555;
-      margin-top: 10px;
-    }
-  </style>
+  /* 작은 물음표 힌트 */
+  .q{display:inline-grid;place-items:center;width:17px;height:17px;border-radius:50%;border:1.5px solid var(--ink-soft);
+    color:var(--ink-soft);font-size:11px;font-weight:800;cursor:help;position:relative;vertical-align:middle}
+  .q::after{content:attr(data-tip);position:absolute;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%);
+    background:var(--bubble);color:var(--bubble-ink);padding:8px 11px;border-radius:9px;font-size:12.5px;font-weight:500;
+    white-space:normal;width:max-content;max-width:240px;line-height:1.45;opacity:0;pointer-events:none;transition:opacity .15s;
+    box-shadow:0 8px 24px rgba(0,0,0,.25)}
+  .q:hover::after,.q:focus::after{opacity:1}
+</style>
 </head>
-
 <body>
+<div class="wrap">
+  <header>
+    <div>
+      <p class="eyebrow">학당 NFT · 사인참사부</p>
+      <h1 class="serif"><b>Bluesky</b> 님의 부적</h1>
+      <p class="sub">3점 · 서버 없이 이 파일만으로 작동합니다</p>
+    </div>
+    <button class="help" id="btnHelp" type="button"><i>?</i> 사용법 다시 보기</button>
+  </header>
 
-  <div class="container">
-
-    <!-- 첫 화면 -->
-    <section id="home">
-      <h1>🔮 부적</h1>
-
-      <p>나에게 필요한 부적을 선택해 보세요.</p>
-
-      <img src="./mandala.png" alt="만다라" class="mandala">
-
-      <button onclick="startSelection()">
-        부적 선택하기
-      </button>
-    </section>
-
-
-    <!-- 부적 선택 화면 -->
-    <section id="selection">
-
-      <h1>부적 선택</h1>
-
-      <p>원하는 부적을 선택해 보세요.</p>
-
-      <div class="cards">
-
-        <div class="card">
-          <img src="13 (1).jpg" alt="부적 1">
-          <br>
-          <button onclick="selectTalisman('13 (1).jpg')">
-            이 부적 선택
-          </button>
-        </div>
-
-        <div class="card">
-          <img src="20.jpg" alt="부적 2">
-          <br>
-          <button onclick="selectTalisman('20.jpg')">
-            이 부적 선택
-          </button>
-        </div>
-
-        <div class="card">
-          <img src="34.jpg" alt="부적 3">
-          <br>
-          <button onclick="selectTalisman('34.jpg')">
-            이 부적 선택
-          </button>
-        </div>
-
+  <main class="grid" id="cards">
+    <article class="card">
+      <a class="frame" href="original/13.jpg" target="_blank" rel="noopener" title="원본 열기"><img src="images/13.jpg" alt="Sain Chamsa Bu #3 Fire" loading="lazy"><span class="badge">사인참사부 · 화</span></a>
+      <div class="body">
+        <h2>사인참사부 화 <span style="display:block;font-size:12.5px;font-weight:400;color:var(--ink-soft);margin-top:2px">Sain Chamsa Bu #3 Fire</span></h2>
+        <p class="effect">액운과 액살을 막는 힘에 더해 불의 기운 · 힘, 발산, 소거</p>
+        <div class="meta"><span>토큰 <b class="mono">#13</b></span><span>사인참사부</span></div>
+        <button class="launch js-open" type="button" data-token="13" data-name="Sain Chamsa Bu #3 Fire" data-img="images/13.jpg">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>
+          라디오닉스 열기
+        </button>
+        <div class="more"><a class="lnk" href="original/13.jpg" download>원본 내려받기 (3543×3543)</a><a class="lnk" href="metadata/13.json" target="_blank">메타데이터</a></div>
       </div>
+    </article>
+    <article class="card">
+      <a class="frame" href="original/20.jpg" target="_blank" rel="noopener" title="원본 열기"><img src="images/20.jpg" alt="금전재물부 #04" loading="lazy"><span class="badge">금전재물부</span></a>
+      <div class="body">
+        <h2>금전재물부 #04</h2>
+        <p class="effect">금전과 재물의 흐름을 위한 부적</p>
+        <div class="meta"><span>토큰 <b class="mono">#20</b></span><span>금전재물부</span></div>
+        <button class="launch js-open" type="button" data-token="20" data-name="금전재물부 #04" data-img="images/20.jpg">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>
+          라디오닉스 열기
+        </button>
+        <div class="more"><a class="lnk" href="original/20.jpg" download>원본 내려받기 (1847×3197)</a><a class="lnk" href="metadata/20.json" target="_blank">메타데이터</a></div>
+      </div>
+    </article>
+    <article class="card">
+      <a class="frame" href="original/34.jpg" target="_blank" rel="noopener" title="원본 열기"><img src="images/34.jpg" alt="인연부 #04" loading="lazy"><span class="badge">인연부</span></a>
+      <div class="body">
+        <h2>인연부 #04</h2>
+        <p class="effect">사람과 인연을 위한 부적</p>
+        <div class="meta"><span>토큰 <b class="mono">#34</b></span><span>인연부</span></div>
+        <button class="launch js-open" type="button" data-token="34" data-name="인연부 #04" data-img="images/34.jpg">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>
+          라디오닉스 열기
+        </button>
+        <div class="more"><a class="lnk" href="original/34.jpg" download>원본 내려받기 (1847×3197)</a><a class="lnk" href="metadata/34.json" target="_blank">메타데이터</a></div>
+      </div>
+    </article>
+  </main>
 
-    </section>
+  <footer>
+    <div>
+      <h3>보관</h3>
+      <p>이 폴더째 보관하세요. 인터넷이 없어도 <span class="mono">index.html</span>을 열면 그대로 씁니다.</p>
+      <p>라디오닉스 설정은 이 컴퓨터의 브라우저에 저장됩니다. 다른 기기에서는 다시 설정하세요.</p>
+    </div>
+    <div>
+      <h3>소유 증명</h3>
+      <p>Kaia 블록체인 · KIP-17<br>컨트랙트 <span class="mono">0x90385a18ae8eb0ce3681d4c0cfd4a49161ee9668</span></p>
+      <p>토큰 번호 <b class="mono">#13 · #20 · #34</b> · 구매 기록은 학당이 보관합니다.</p>
+    </div>
+    <div>
+      <h3>24시간 작동</h3>
+      <p>함께 받은 <b>시작하기.pdf</b>와 <b>AI에게-주세요.md</b>를 보세요. 깃허브에 올리면 창을 닫아도 돌아갑니다.</p>
+    </div>
+  </footer>
+</div>
 
+<!-- ── 라디오닉스 ── -->
+<div class="rad" id="rad" role="dialog" aria-modal="true" aria-labelledby="rad-title">
+  <div class="rad-in">
+    <div class="rad-top">
+      <h2 id="rad-title"><small>라디오닉스</small><span id="rad-name"></span></h2>
+      <div class="rad-tools">
+        <div class="seg" role="group" aria-label="소리 설정" title="작동 중 소리">
+          <button class="seg-b" type="button" id="sndOn" data-snd="on" aria-pressed="true">진동음</button><button class="seg-b" type="button" id="sndOff" data-snd="off" aria-pressed="false">무음</button>
+        </div>
+        <button class="ghost" type="button" id="btnRadHelp">사용법</button>
+        <button class="ghost" type="button" onclick="closeRad()">닫기 <span style="opacity:.55">Esc</span></button>
+      </div>
+    </div>
+    <p class="rad-note">왼쪽에 <b>무엇을</b>, 오른쪽에 <b>누구에게</b>를 정하고 가운데 도장을 누르세요. 부적이 움직이는 동안이 작동 중입니다.</p>
+    <div class="stage">
+      <section class="pane" id="pane-purpose">
+        <h3><span class="step">1</span>목적사 <span class="q" tabindex="0" data-tip="부적의 힘이 향할 방향입니다. 금전운, 합격, 건강처럼 한 가지를 정하세요. 기도문이나 진언을 적어도 됩니다.">?</span></h3>
+        <p class="hint">무엇을 바라는가</p>
+        <div class="drop" id="drop-purpose" role="button" tabindex="0"><div class="ph"><b>+</b>이미지 넣기<br><span style="font-size:12px">바라는 것을 나타내는 사진</span></div></div>
+        <input type="file" id="file-purpose" accept="image/*" hidden>
+        <textarea id="wish01" placeholder="예) 사업이 안정되고 새 거래처가 열리기를"></textarea>
+      </section>
 
-    <!-- 선택 결과 -->
-    <section id="result">
+      <section class="core">
+        <div class="orbit" id="orbit">
+          <img class="m m0" src="assets/mandala.png" alt=""><img class="m m1" src="assets/mandala.png" alt="">
+          <img class="m m2" src="assets/mandala.png" alt=""><img class="m m3" src="assets/mandala.png" alt="">
+          <div class="nft"><img id="nft-img" src="" alt=""></div>
+        </div>
+        <div class="acts">
+          <button class="seal" id="btnAct" type="button" onclick="toggleAct()" aria-pressed="false">
+            <span class="k">Activate</span><span class="e">발동</span>
+          </button>
+          <button class="save" id="btnSave" type="button" onclick="saveRad()">설정 저장</button>
+        </div>
+        <p class="status" id="status"></p>
+      </section>
 
-      <h1>✨ 선택한 부적</h1>
-
-      <p>당신이 선택한 부적입니다.</p>
-
-      <img id="selectedImage" src="" alt="선택한 부적">
-
-      <button onclick="location.reload()" class="back">
-        처음으로
-      </button>
-
-    </section>
-
+      <section class="pane" id="pane-target">
+        <h3><span class="step">2</span>대상 <span class="q" tabindex="0" data-tip="누구에게 작용할지입니다. 본인이면 본인 사진과 이름·생년월일을, 다른 사람이면 그 사람의 것을 적으세요.">?</span></h3>
+        <p class="hint">누구에게 이르게 할 것인가</p>
+        <div class="drop" id="drop-target" role="button" tabindex="0"><div class="ph"><b>+</b>이미지 넣기<br><span style="font-size:12px">대상의 사진</span></div></div>
+        <input type="file" id="file-target" accept="image/*" hidden>
+        <textarea id="wish02" placeholder="예) 홍길동 · 1975년 3월 2일생 · 서울 거주"></textarea>
+      </section>
+    </div>
   </div>
+  <audio id="drone" src="assets/drone.m4a" loop preload="auto" aria-hidden="true"></audio>
+</div>
 
+<!-- ── 말풍선 가이드 ── -->
+<div class="tour-dim" id="tourDim"><div class="tour-hole" id="tourHole"></div></div>
+<div class="bubble" id="bubble" role="dialog" aria-live="polite">
+  <p class="t"><span id="bTitle"></span><small id="bStep"></small></p>
+  <p id="bText"></p>
+  <div class="row"><button class="skip" type="button" id="bSkip">건너뛰기</button><button class="next" type="button" id="bNext">다음</button></div>
+</div>
 
-  <script>
+<script>var OWNER="Bluesky";</script>
+<script>(function(){
+  var KEY = 'hakdang.radionics.' + OWNER;
+  var store = {};
+  try { store = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch(e) {}
+  var canStore = true;
+  try { localStorage.setItem('hakdang.test','1'); localStorage.removeItem('hakdang.test'); } catch(e) { canStore = false; }
 
-    function startSelection() {
-      document.getElementById("home").style.display = "none";
-      document.getElementById("selection").style.display = "block";
-    }
+  var rad = document.getElementById('rad');
+  var cur = null, running = false, player = null;
+  // 소리 설정: 'on'(진동음) / 'off'(무음). 브라우저에 저장.
+  var SND_KEY = 'hakdang.sound';
+  function getSnd(){ try { return localStorage.getItem(SND_KEY) === 'off' ? 'off' : 'on'; } catch(e) { return 'on'; } }
+  function setSnd(v){
+    try { localStorage.setItem(SND_KEY, v); } catch(e) {}
+    document.getElementById('sndOn').setAttribute('aria-pressed', v === 'on' ? 'true' : 'false');
+    document.getElementById('sndOff').setAttribute('aria-pressed', v === 'off' ? 'true' : 'false');
+    if (running) { if (v === 'off') { killPlayer(); setStatus('작동 중입니다 (무음).', true); } else { startPlayer(); } }
+  }
+  function killPlayer(){ if (player) { try { player.pause(); player.src = ''; player.load(); } catch(e) {} player = null; } }
+  function startPlayer(){
+    killPlayer();
+    // 매번 새 객체로 재생 — 이전 재생 상태가 남아 두 번째 부적부터 소리가 안 나는 문제 방지
+    player = new Audio(document.getElementById('drone').getAttribute('src'));
+    player.loop = true;
+    var p = player.play();
+    if (p && p.then) p.then(function(){
+      setStatus('작동 중입니다. 소리가 나는 동안 작동합니다. 창을 닫거나 도장을 다시 누르면 멈춥니다.', true);
+    }).catch(function(){
+      setStatus('브라우저가 소리를 막았습니다. 페이지 아무 곳이나 한 번 클릭한 뒤 도장을 다시 누르세요. 소리 없이 쓰려면 위의 [무음]을 누르세요.');
+    });
+  }
 
-    function selectTalisman(image) {
-      document.getElementById("selection").style.display = "none";
-      document.getElementById("result").style.display = "block";
+  function $(id){ return document.getElementById(id); }
+  function setStatus(m, ok){ var s = $('status'); s.textContent = m || ''; s.className = 'status' + (ok ? ' ok' : ''); }
+  function save(){
+    if (!canStore) { setStatus('이 브라우저는 저장을 막고 있습니다. 설정은 이번에만 유지됩니다. (크롬으로 열면 저장됩니다)'); return; }
+    try { localStorage.setItem(KEY, JSON.stringify(store)); }
+    catch(e) { setStatus('저장 공간이 부족합니다. 이미지를 더 작은 것으로 바꿔 보세요.'); }
+  }
+  function slot(t){ return store[t] || (store[t] = {}); }
 
-      document.getElementById("selectedImage").src = image;
-    }
+  function shrink(file, cb){
+    var r = new FileReader();
+    r.onload = function(){
+      var im = new Image();
+      im.onload = function(){
+        var max = 700, s = Math.min(1, max/Math.max(im.width, im.height));
+        var c = document.createElement('canvas');
+        c.width = Math.round(im.width*s); c.height = Math.round(im.height*s);
+        c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+        cb(c.toDataURL('image/jpeg', .82));
+      };
+      im.src = r.result;
+    };
+    r.readAsDataURL(file);
+  }
+  function paint(which, data){
+    var box = $('drop-' + which);
+    var ph = which === 'purpose' ? '<b>+</b>이미지 넣기<br><span style="font-size:12px">바라는 것을 나타내는 사진</span>'
+                                 : '<b>+</b>이미지 넣기<br><span style="font-size:12px">대상의 사진</span>';
+    box.innerHTML = data ? '<img alt=""><span class="swap">바꾸기</span>' : '<div class="ph">' + ph + '</div>';
+    if (data) box.querySelector('img').src = data;
+  }
 
-  </script>
+  window.openRad = function(t, name, img){
+    cur = t;
+    $('rad-name').textContent = name;
+    $('nft-img').src = img;
+    var d = slot(t);
+    $('wish01').value = d.wish01 || '';
+    $('wish02').value = d.wish02 || '';
+    paint('purpose', d.imgPurpose); paint('target', d.imgTarget);
+    stop(); setStatus('');
+    rad.classList.add('open'); document.body.style.overflow = 'hidden';
+    rad.scrollTop = 0;
+    if (!seen('rad')) setTimeout(function(){ startTour('rad'); }, 350);
+  };
+  window.closeRad = function(){
+    stop(); endTour(); rad.classList.remove('open'); document.body.style.overflow = '';
+  };
+  function stop(){
+    running = false;
+    rad.classList.remove('running');
+    killPlayer();
+    var b = $('btnAct');
+    b.querySelector('.k').textContent = 'Activate'; b.querySelector('.e').textContent = '발동';
+    b.classList.remove('on'); b.setAttribute('aria-pressed','false');
+  }
+  // 부적 왕복 궤도 반지름: 가로 배치면 목적사 ↔ 대상 패널 중심까지, 세로 배치면 화면 폭 기준
+  function fitOrbit(){
+    var nft = document.querySelector('.orbit .nft'), o = $('orbit').getBoundingClientRect();
+    var p = $('pane-purpose').getBoundingClientRect(), t = $('pane-target').getBoundingClientRect();
+    var wide = window.innerWidth > 940;
+    var rx = wide ? ((t.left + t.width/2) - (p.left + p.width/2)) / 2 : Math.min(window.innerWidth, 600) * 0.32;
+    var ry = wide ? o.height * 0.16 : o.height * 0.12;
+    nft.style.setProperty('--rx', Math.round(rx) + 'px');
+    nft.style.setProperty('--ry', Math.round(ry) + 'px');
+  }
+  window.addEventListener('resize', function(){ if (running) fitOrbit(); });
 
+  window.toggleAct = function(){
+    var b = $('btnAct');
+    if (running) { stop(); setStatus('멈췄습니다.'); return; }
+    running = true;
+    fitOrbit();
+    rad.classList.add('running');
+    if (getSnd() === 'off') setStatus('작동 중입니다 (무음). 창을 닫거나 도장을 다시 누르면 멈춥니다.', true);
+    else startPlayer();
+    b.querySelector('.k').textContent = 'InActivate'; b.querySelector('.e').textContent = '작동 중';
+    b.classList.add('on'); b.setAttribute('aria-pressed','true');
+  };
+  window.saveRad = function(){
+    var d = slot(cur);
+    d.wish01 = $('wish01').value;
+    d.wish02 = $('wish02').value;
+    save();
+    if (canStore) setStatus('저장했습니다. 다음에 열 때 그대로 보입니다.', true);
+  };
+
+  ['purpose','target'].forEach(function(which){
+    var box = $('drop-' + which), inp = $('file-' + which);
+    box.addEventListener('click', function(){ inp.click(); });
+    box.addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); inp.click(); } });
+    inp.addEventListener('change', function(){
+      var f = inp.files && inp.files[0]; if (!f) return;
+      shrink(f, function(data){
+        slot(cur)['img' + which.charAt(0).toUpperCase() + which.slice(1)] = data;
+        paint(which, data); save();
+        setStatus('이미지를 넣었습니다.', true);
+      });
+      inp.value = '';
+    });
+  });
+
+  Array.prototype.forEach.call(document.querySelectorAll('.js-open'), function(b){
+    b.addEventListener('click', function(){ openRad(b.dataset.token, b.dataset.name, b.dataset.img); });
+  });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') { if (tour) endTour(); else if (rad.classList.contains('open')) closeRad(); }
+  });
+
+  /* ── 말풍선 가이드 ── */
+  var TOURS = {
+    main: [
+      { el: '.card .launch', side: 'top', title: '부적을 작동시키려면', text: '부적마다 이 버튼이 있습니다. 눌러서 라디오닉스 장치를 여세요.' },
+      { el: '#btnHelp', side: 'bottom', title: '헷갈리면', text: '언제든 여기를 누르면 이 안내가 다시 나옵니다.' }
+    ],
+    rad: [
+      { el: '#pane-purpose', side: 'right', title: '1. 무엇을', text: '바라는 것을 한 가지 정해 적습니다. 그것을 떠올리게 하는 사진을 넣으면 더 좋습니다.' },
+      { el: '#pane-target', side: 'left', title: '2. 누구에게', text: '작용할 사람입니다. 본인이면 본인 사진과 이름·생년월일을 적으세요.' },
+      { el: '#btnAct', side: 'top', title: '3. 도장을 누르면 작동', text: '부적이 양쪽을 오가고 소리가 납니다. 다시 누르면 멈춥니다. 소리 없이 쓰려면 오른쪽 위 [무음]을 고르세요.' },
+      { el: '#btnSave', side: 'top', title: '4. 저장', text: '적은 내용과 사진을 이 브라우저에 남깁니다. 다음에 열면 그대로 있습니다.' }
+    ]
+  };
+  var tour = null, step = 0;
+  var dim = $('tourDim'), hole = $('tourHole'), bub = $('bubble');
+  function seen(name){ try { return localStorage.getItem('hakdang.tour.' + name) === '1'; } catch(e) { return true; } }
+  function markSeen(name){ try { localStorage.setItem('hakdang.tour.' + name, '1'); } catch(e) {} }
+
+  window.startTour = function(name){
+    tour = TOURS[name]; step = 0; tourName = name;
+    dim.classList.add('on'); showStep();
+  };
+  var tourName = '';
+  function endTour(){
+    if (!tour) return;
+    markSeen(tourName); tour = null;
+    dim.classList.remove('on'); bub.classList.remove('on');
+  }
+  window.endTour = endTour;
+  function showStep(){
+    var s = tour[step]; if (!s) { endTour(); return; }
+    var el = document.querySelector(s.el); if (!el) { step++; showStep(); return; }
+    el.scrollIntoView({ block: 'center', behavior: 'instant' });
+    place(el, s);
+    setTimeout(function(){ place(el, s); }, 120);
+    $('bTitle').textContent = s.title;
+    $('bStep').textContent = (step + 1) + ' / ' + tour.length;
+    $('bText').textContent = s.text;
+    $('bNext').textContent = step === tour.length - 1 ? '알겠어요' : '다음';
+  }
+  function place(el, s){
+    var r = el.getBoundingClientRect(), pad = 8;
+    hole.style.left = (r.left - pad) + 'px'; hole.style.top = (r.top - pad) + 'px';
+    hole.style.width = (r.width + pad*2) + 'px'; hole.style.height = (r.height + pad*2) + 'px';
+    bub.setAttribute('data-side', s.side); bub.classList.add('on');
+    var bw = bub.offsetWidth, bh = bub.offsetHeight, gap = 16, x, y;
+    var vw = window.innerWidth, vh = window.innerHeight, side = s.side;
+    if (vw < 940 && (side === 'left' || side === 'right')) side = 'bottom';
+    if (side === 'top')    { x = r.left + r.width/2 - bw/2; y = r.top - bh - gap; if (y < 8) { side = 'bottom'; y = r.bottom + gap; } }
+    if (side === 'bottom') { x = r.left + r.width/2 - bw/2; y = r.bottom + gap; if (y + bh > vh - 8) { y = Math.max(8, r.top - bh - gap); side = 'top'; } }
+    if (side === 'left')   { x = r.left - bw - gap; y = r.top + 12; }
+    if (side === 'right')  { x = r.right + gap; y = r.top + 12; }
+    x = Math.max(8, Math.min(x, vw - bw - 8)); y = Math.max(8, Math.min(y, vh - bh - 8));
+    bub.style.left = x + 'px'; bub.style.top = y + 'px';
+    bub.setAttribute('data-side', side);
+    var ax = Math.max(18, Math.min(bw - 26, r.left + r.width/2 - x - 7));
+    var ay = Math.max(14, Math.min(bh - 26, r.top + Math.min(r.height/2, 40) - y - 7));
+    bub.style.setProperty('--ax', ax + 'px'); bub.style.setProperty('--ay', ay + 'px');
+  }
+  $('bNext').addEventListener('click', function(){ step++; showStep(); });
+  $('bSkip').addEventListener('click', endTour);
+  dim.addEventListener('click', endTour);
+  window.addEventListener('resize', function(){ if (tour) { var s = tour[step], el = s && document.querySelector(s.el); if (el) place(el, s); } });
+  $('btnHelp').addEventListener('click', function(){ startTour('main'); });
+  $('sndOn').addEventListener('click', function(){ setSnd('on'); });
+  $('sndOff').addEventListener('click', function(){ setSnd('off'); });
+  setSnd(getSnd());
+  $('btnRadHelp').addEventListener('click', function(){ startTour('rad'); });
+
+  if (!seen('main')) setTimeout(function(){ startTour('main'); }, 600);
+})();
+</script>
 </body>
 </html>
